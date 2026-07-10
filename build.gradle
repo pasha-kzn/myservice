@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.1.0'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.boot' version '3.4.0'   // ← Понизил до стабильной версии
+	id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'ru.paul'
@@ -14,13 +14,30 @@ java {
 }
 
 repositories {
-	mavenCentral()
+	mavenCentral()   // ← Убедитесь, что репозиторий указан
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	// Правильный стартер для Spring Boot 3.x
+	implementation 'org.springframework.boot:spring-boot-starter-web'  // ← изменил webmvc → web
+
+	// Для тестов
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
+	testCompileOnly 'org.projectlombok:lombok:1.18.36'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+	// Apache POI для Excel
+	implementation 'org.apache.poi:poi-ooxml:5.3.0'
+
+	// Swagger (OpenAPI 3)
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+
 }
 
 tasks.named('test') {
