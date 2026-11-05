@@ -154,7 +154,7 @@ public class MoexBondGridClient {
                "MATDATE,OFFERDATE,BUYBACKDATE,SETTLEDATE,CALLOPTIONDATE,PUTOPTIONDATE," +
                "EMITENTNAME,INN" +
                "&listname=1,2,3" +
-               "&sec_type=stock_corporate_bond,stock_exchange_bond" +
+//               "&sec_type=stock_corporate_bond,stock_exchange_bond" +
                "&lang=ru" +
                "&sort_column=SHORTNAME" +
                "&sort_order=asc" +

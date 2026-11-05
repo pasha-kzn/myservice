@@ -17,6 +17,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.paul.myservice.dto.BondsResponse;
+import ru.paul.myservice.enums.PaulBonds;
+import ru.paul.myservice.enums.VeraBonds;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +26,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -41,8 +45,7 @@ public class ExcelExportService {
 
     @PostConstruct
     public void init() {
-        String projectRoot = System.getProperty("user.dir");
-        this.dataDir = new File(projectRoot, dataDirectory);
+        this.dataDir = new File(dataDirectory);
 
         if (!dataDir.exists()) {
             boolean created = dataDir.mkdirs();
@@ -135,18 +138,18 @@ public class ExcelExportService {
         Row headerRow = sheet.createRow(0);
         String[] headers = {
                 "Код", "Код режима торгов", "Краткое имя", "Имя", "Полное имя", "ISIN", "регистрационный номер",
-                "латинское наименование", "Приостановлен ли листинг", "emitentName", "ИНН",
-                "Номинал", "Валюта", "объем выпуска", "размещенный объем", "стоимость лота", "размер лота",
-                "Купон, %", "Размер купона", "период купона в днях", "дата следующей выплаты купона", "НКД",
-                "Дата погашения", "дата предыдущей сделки", "дата оферты", "дата оферты (альтернативная)",
+                "латинское наименование", "ПРИОСТАНОВЛЕН ЛИ ЛИСТИНГ", "EMITENT_NAME", "ИНН",
+                "НОМИНАЛ", "Валюта", "объем выпуска", "размещенный объем", "стоимость лота", "размер лота",
+                "КУПОН, %", "РАЗМЕР КУПОНА", "ПЕРИОД КУПОНА В ДНЯХ", "дата следующей выплаты купона", "НКД",
+                "ДАТА ПОГАШЕНИЯ", "дата предыдущей сделки", "дата оферты", "дата оферты (альтернативная)",
                 "дата расчетов", "дата call-опциона", "дата put-опциона", "DATEYIELDFROMISSUER",
-                "средневзвешенная цена", "Доходность, %", "цена последней сделки", "юридическая цена закрытия",
-                "доходность к погашению", "highRisk", "Является ли бумага обеспечением", "Цена последней сделки в процентах от номинала",
+                "средневзвешенная цена", "ДОХОДНОСТЬ, %", "цена последней сделки", "юридическая цена закрытия",
+                "ДОХОДНОСТЬ К ПОГАШЕНИЮ", "HIGH_RISK", "Является ли бумага обеспечением", "Цена последней сделки в процентах от номинала",
                 "Цена последней сделки в рублях (с учетом НКД)", "Средневзвешенная цена за сессию (в % от номинала)",
-                "Статус", "Тип", "Биржа", "код рынка", "код сектора", "тип бумаги", "подтип облигации",
-                "валюта", "уровень листинга", "количество знаков после запятой", "минимальный шаг цены",
+                "Статус", "ТИП", "Биржа", "код рынка", "код сектора", "тип бумаги", "подтип облигации",
+                "валюта", "УРОВЕНЬ ЛИСТИНГА", "количество знаков после запятой", "минимальный шаг цены",
                 "примечания", "идентификатор инструмента", "цена оферты", "FACEVALUEONSETTLEDATE",
-                "Только для квалов"
+                "КВАЛ ОНЛИ", "Паша количество", "Паша сумма", "Вера количество", "Вера сумма"
         };
 
         for (int i = 0; i < headers.length; i++) {
@@ -231,6 +234,28 @@ public class ExcelExportService {
 
         // Доступность для инвесторов
         row.createCell(col++).setCellValue(nullSafe(String.valueOf(bond.getIsQualifiedInvestors())));
+
+        //Паша
+        row.createCell(col++).setCellValue(nullSafe(getPaulBondsCount(bond.getIsin())));
+        col++;
+
+        //Вера
+        row.createCell(col++).setCellValue(nullSafe(getVeraBondsCount(bond.getIsin())));
+        col++;
+    }
+
+    private String getPaulBondsCount(String isin) {
+        Optional<PaulBonds> optionalValue = Arrays.stream(PaulBonds.values()).toList().stream()
+                .filter(v -> isin.equals(v.getCode()))
+                .findFirst();
+        return optionalValue.isPresent() ? optionalValue.get().getCount() : "";
+    }
+
+    private String getVeraBondsCount(String isin) {
+        Optional<VeraBonds> optionalValue = Arrays.stream(VeraBonds.values()).toList().stream()
+                .filter(v -> isin.equals(v.getCode()))
+                .findFirst();
+        return optionalValue.isPresent() ? optionalValue.get().getCount() : "";
     }
 
     /**

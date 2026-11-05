@@ -11,6 +11,8 @@ import ru.paul.myservice.dto.BondsResponse;
 import java.io.File;
 import java.util.List;
 
+import static ru.paul.myservice.client.BondMerger.mergeBonds;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,9 +34,10 @@ public class BondExportService {
      * Экспортирует облигации в Excel
      */
     public String exportBondsToExcel() throws InterruptedException {
-        List<BondsResponse> bonds = loadAllBonds();
+        List<BondsResponse> bondsWithRate = loadAllBonds();
         List<BondsResponse> bondsFullInfo = moexClient.getAllBonds();
-        bonds.addAll(bondsFullInfo);
+        bondsWithRate.addAll(bondsFullInfo);
+        List<BondsResponse> bonds = mergeBonds(bondsWithRate, bondsFullInfo);
         return excelExportService.exportBondsToExcel(bonds);
     }
 
